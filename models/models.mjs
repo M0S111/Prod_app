@@ -14,6 +14,7 @@ const sequelizeNoDb = new Sequelize(
   }
 );
 
+
 // const databaseName = process.env.DB_DATABASE;
 
 // async function createDatabase() {
