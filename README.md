@@ -9,6 +9,14 @@ Prerequisites:
 
 First run `npm install` to install dependencies.
 
-A Docker container with Postgres is required. Install Docker & run a `postgres:latest` image, then run:
+Then build the container with:
+
+`docker build -t my-postgres-image .`
+
+followed by:
+
+`docker run -d -p 5432:5432 --name my-postgres my-postgres-image`
+
+Now run:
 
 `npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all`
