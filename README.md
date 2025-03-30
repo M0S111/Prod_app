@@ -2,14 +2,14 @@
 
 This is a very simple project with API endpoints which perform CRUD operations on products table in a Postgres DB.
 
-## Prerequisites:
+## Prerequisites
 - Node.js
 - npm
 - Docker
 
 ## Dependencies
 
-First run `npm install` to install dependencies.
+First run `npm install` in the root directory to install dependencies.
 
 ## Postgres Container
 
