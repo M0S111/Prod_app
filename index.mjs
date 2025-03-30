@@ -1,3 +1,4 @@
+// Import modules
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcrypt';
@@ -5,10 +6,13 @@ import jsonwebtoken from 'jsonwebtoken';
 import { User, Product } from './models/models.mjs';
 import authenticateToken from './middleware/auth_mid.mjs';
 
+// Alias JWT
 const jwt = jsonwebtoken;
 
+// Instantiate app object
 const app = express();
 
+// Enable middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -22,9 +26,8 @@ app.post('/register', async (req, res) => {
         const user = await User.create({ username, password: hashPass });
         res.status(201).json({ message: 'User Registered', user });
     } catch (error) {
-        throw error;
-        //console.error('Registration error:', error);
-        //res.status(500).json({ message: 'Error registering user', error });
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Error registering user', error });
     }
 });
 
@@ -42,10 +45,13 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid Credentials' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password); //|| (password === user.password);
+        // Supporting unencrypted passwords
+        const passwordMatch = await bcrypt.compare(password, user.password) || (password === user.password);
 
         if (passwordMatch) {
+            // Token with 'client' role set
             const token = jwt.sign({ username: user.username, role: 'client' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            // Token stored in cookie
             res.cookie('jwt', token, { httpOnly: true, secure: true, path: '/api', sameSite: 'lax' });
             res.status(201).json({ message: 'Login Successful' });
         } else {
@@ -72,10 +78,13 @@ app.post('/adminlogin', async (req, res) => {
             return res.status(401).json({ message: 'Invalid Credentials' });
         }
 
+        // Supporting unencrypted passwords
         const passwordMatch = await bcrypt.compare(password, user.password) || (password === user.password);
 
         if (passwordMatch) {
+            // Token with 'admin' role set
             const token = jwt.sign({ username: user.username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            // Token stored in cookie
             res.cookie('jwt', token, { httpOnly: true, secure: true, path: '/api', sameSite: 'lax' });
             res.status(201).json({ message: 'Login Successful' });
         } else {
@@ -87,7 +96,7 @@ app.post('/adminlogin', async (req, res) => {
     }
 });
 
-// GET for Admins & Clients
+// GET for Admins & Clients using auth middleware
 app.get('/products', authenticateToken(['admin', 'client']), async (req, res) => {
     try {
         const prods = await Product.findAll();
@@ -106,7 +115,7 @@ app.get('/see', async (req, res) => {
     }
 });
 
-// Admin specific routes
+// Admin specific routes using auth middleware (POST, PUT, DELETE)
 app.post("/api/addProducts", authenticateToken(['admin']), async (req, res) => {
 
     const { name, price } = req.body;
@@ -160,5 +169,6 @@ app.delete("/api/delProduct/:id", authenticateToken(['admin']), async (req, res)
 
 });
 
+// Listen on PORT environment variable
 const port = process.env.PORT;
 app.listen(port, () => { console.log(`Server up on port ${port}...`) });
