@@ -1,7 +1,7 @@
 FROM postgres:latest
 
 # Set the PostgreSQL password (not recommended for production without proper security)
-ENV POSTGRES_PASSWORD ""
+ENV POSTGRES_PASSWORD "devpass"
 
 # Set the PostgreSQL user (default is postgres)
 # ENV POSTGRES_USER postgres

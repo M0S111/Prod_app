@@ -27,6 +27,7 @@ Craete a `.env` file in the root of the project, setting the following variables
 
 ```
 DB_USER=postgres
+DB_PASSWORD=devpass
 DB_DATABASE=store_db
 DB_HOST=localhost
 PORT=8080
