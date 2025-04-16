@@ -3,8 +3,10 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
+import Joi from 'joi';
 import { User, Product } from './models/models.mjs';
 import authenticateToken from './middleware/auth_mid.mjs';
+import validate from './middleware/valid_mid.mjs';
 
 // Alias JWT
 const jwt = jsonwebtoken;
@@ -16,10 +18,16 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
-app.post('/register', async (req, res) => {
+// Validation schema for Joi
+const schema = Joi.object({
+    username: Joi.string().trim().max(30).case("lower").required(),
+    password: Joi.string().required()
+});
 
-    const { username, password } = req.body;
+// Routes
+app.post('/register', validate(schema), async (req, res) => {
+
+    const { username, password } = req.validData;
     const hashPass = await bcrypt.hash(password, 10);
 
     try {
@@ -33,9 +41,9 @@ app.post('/register', async (req, res) => {
 
 // Client/User login route
 
-app.post('/login', async (req, res) => {
+app.post('/login', validate(schema), async (req, res) => {
 
-    const { username, password } = req.body;
+    const { username, password } = req.validData;
 
     try {
         const user = await User.findOne({ where: { username } });
@@ -66,9 +74,9 @@ app.post('/login', async (req, res) => {
 
 // Admin login route
 
-app.post('/adminlogin', async (req, res) => {
+app.post('/adminlogin', validate(schema), async (req, res) => {
 
-    const { username, password } = req.body;
+    const { username, password } = req.validData;
 
     try {
         const user = await User.findOne({ where: { username } });

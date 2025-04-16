@@ -9,6 +9,9 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+
+    await queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS citext;');
+
     await queryInterface.createTable('users', {
       id: {
         type: Sequelize.INTEGER,
@@ -16,7 +19,7 @@ module.exports = {
         autoIncrement: true,
       },
       username: {
-        type: Sequelize.STRING,
+        type: Sequelize.CITEXT,
         allowNull: false,
         unique: true,
       },
@@ -42,6 +45,9 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
+
+    await queryInterface.sequelize.query('DROP EXTENSION IF EXISTS citext;');
+
     await queryInterface.dropTable('users');
   }
 };

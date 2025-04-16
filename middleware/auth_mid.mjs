@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import jsonwebtoken from 'jsonwebtoken';
 
 const jwt = jsonwebtoken;
